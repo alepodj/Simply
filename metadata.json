@@ -1,0 +1,12 @@
+{
+  "name": "Simply",
+  "description": "An AI-powered personal learning agent that processes text, PDFs, DOCX, and images to create interactive learning experiences using Google Gemini AI.",
+  "version": "1.0.0",
+  "author": "Simply Team",
+  "keywords": ["ai", "learning", "education", "gemini", "react", "typescript"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/simply.git"
+  },
+  "license": "MIT"
+}
