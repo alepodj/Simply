@@ -170,9 +170,54 @@ export const InputPanel: React.FC = () => {
   // Save text input when switching modes
   const handleModeSwitch = (newMode: boolean) => {
     if (textInput.trim() !== '' && activeStudy) {
-      handleMaterialUpdate(activeStudy.sourceMaterial.parts)
+      // Save the current text input to the study
+      const currentParts = activeStudy.sourceMaterial.parts
+      const textPartIndex = currentParts.findIndex((p) => p.type === 'text')
+
+      if (textPartIndex > -1) {
+        currentParts[textPartIndex].content = textInput
+      } else {
+        currentParts.push({
+          type: 'text',
+          content: textInput,
+          mimeType: 'text/plain',
+        })
+      }
+
+      handleMaterialUpdate(currentParts)
     }
     setIsTextMode(newMode)
+  }
+
+  // Save text input when it changes
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value
+    setTextInput(newValue)
+
+    // Save to study
+    if (activeStudy) {
+      const currentParts = [...activeStudy.sourceMaterial.parts]
+      const textPartIndex = currentParts.findIndex((p) => p.type === 'text')
+
+      if (newValue.trim() !== '') {
+        if (textPartIndex > -1) {
+          currentParts[textPartIndex].content = newValue
+        } else {
+          currentParts.push({
+            type: 'text',
+            content: newValue,
+            mimeType: 'text/plain',
+          })
+        }
+      } else {
+        // Remove text part if content is empty
+        if (textPartIndex > -1) {
+          currentParts.splice(textPartIndex, 1)
+        }
+      }
+
+      handleMaterialUpdate(currentParts)
+    }
   }
 
   if (!context || !activeStudy) {
@@ -253,10 +298,7 @@ export const InputPanel: React.FC = () => {
 
               <Textarea
                 value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                onBlur={() =>
-                  handleMaterialUpdate(activeStudy.sourceMaterial.parts)
-                }
+                onChange={handleTextChange}
                 onPaste={handlePaste}
                 placeholder='Type or paste your study material here...&#10;&#10;You can use advanced formatting:&#10;• Bullet points&#10;• **Bold text**&#10;• *Italic text*&#10;• # Headers&#10;• > Blockquotes&#10;• `Code snippets`'
                 className='flex-1 input-modern resize-none text-lg placeholder:text-white/40 leading-relaxed overflow-y-auto'
